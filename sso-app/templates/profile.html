@@ -17,7 +17,11 @@
             Welcome! You have successfully logged in through the federated identity provider.
         </p>
         <p>
-            Your new federated username is: <strong>{{ user.preferred_username }}</strong>
+            Your original username is: <strong>{{ user.preferred_username }}</strong>
+        </p>
+        <p>
+        <p>
+            Your new federated username is: <strong>{{ user.name }}</strong>
         </p>
         <p><a href="{{ url_for('logout') }}">Logout</a></p>
         

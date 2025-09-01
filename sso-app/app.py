@@ -19,30 +19,25 @@ KEYCLOAK_INTERNAL_URL = os.environ.get('KEYCLOAK_INTERNAL_URL', 'http://keycloak
 
 def get_oauth_client():
     """Lazy-load OAuth client configuration when needed."""
+    
     if not hasattr(oauth, 'keycloak'):
-        # Fetch the discovery document using internal URL during startup
-        discovery_url = f"{KEYCLOAK_INTERNAL_URL}/realms/{KEYCLOAK_REALM}/.well-known/openid-configuration"
-        resp = requests.get(discovery_url)
-        resp.raise_for_status()
-        server_metadata = resp.json()
-
-        # Replace internal URLs with public URLs for browser-facing endpoints
-        public_endpoints = ['authorization_endpoint', 'end_session_endpoint']
-        for endpoint in public_endpoints:
-            if endpoint in server_metadata:
-                original_url = server_metadata[endpoint]
-                server_metadata[endpoint] = server_metadata[endpoint].replace(KEYCLOAK_INTERNAL_URL, KEYCLOAK_PUBLIC_URL)
-                print(f"DEBUG: Replaced {endpoint}: {original_url} -> {server_metadata[endpoint]}")
-
+        # Direct configuration without discovery document
         oauth.register(
             name='keycloak',
             client_id=KEYCLOAK_CLIENT_ID,
             client_secret=KEYCLOAK_CLIENT_SECRET,
-            server_metadata=server_metadata,
+            authorize_url=f"{KEYCLOAK_PUBLIC_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth",
+            access_token_url=f"{KEYCLOAK_INTERNAL_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token",
+            userinfo_endpoint=f"{KEYCLOAK_INTERNAL_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo",
+            jwks_uri=f"{KEYCLOAK_INTERNAL_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs",
             client_kwargs={
                 'scope': 'openid profile email'
             }
         )
+        print(f"DEBUG: Direct OAuth configuration complete")
+        print(f"DEBUG: authorize_url: {KEYCLOAK_PUBLIC_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth")
+        print(f"DEBUG: access_token_url: {KEYCLOAK_INTERNAL_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token")
+                    
     return oauth.keycloak
 
 
@@ -62,11 +57,16 @@ def login():
 @app.route('/auth')
 def auth():
     """Callback route for Keycloak."""
-    keycloak_client = get_oauth_client()
-    token = keycloak_client.authorize_access_token()
-    userinfo = keycloak_client.parse_id_token(token)
-    session['user'] = userinfo
-    return redirect(url_for('profile'))
+    try:
+        keycloak_client = get_oauth_client()
+        token = keycloak_client.authorize_access_token()
+        # Parse ID token with nonce validation
+        userinfo = keycloak_client.parse_id_token(token, nonce=session.get('_oauth_nonce'))
+        session['user'] = userinfo
+        return redirect(url_for('profile'))
+    except Exception as e:
+        app.logger.error(f"OAuth callback error: {e}")
+        return f"Authentication failed: {str(e)}", 500
 
 @app.route('/profile')
 def profile():

@@ -24,9 +24,9 @@
       "authorizationServicesEnabled": false,
       "serviceAccountsEnabled": true,
       "redirectUris": [
-        "http://localhost:8080/realms/federated-idp/broker/domain-1-idp/endpoint/*"
+        "http://localhost:8080/auth/realms/federated-idp/broker/domain-1-idp/endpoint/*"
       ],
-      "rootUrl": "http://localhost:8080/realms/federated-idp/broker/domain-1-idp/endpoint"
+      "rootUrl": "http://localhost:8080/auth/realms/federated-idp/broker/domain-1-idp/endpoint"
     }
   ]
 }
