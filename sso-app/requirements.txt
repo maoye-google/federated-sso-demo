@@ -2,3 +2,4 @@ Flask==2.1.2
 Authlib==1.0.1
 requests
 Werkzeug==2.0.3
+PyJWT

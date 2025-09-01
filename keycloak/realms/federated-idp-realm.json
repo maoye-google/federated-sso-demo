@@ -2,6 +2,7 @@
   "realm": "federated-idp",
   "enabled": true,
   "loginTheme": "keycloak",
+  "browserFlow": "browser",
   "identityProviders": [
     {
       "alias": "domain-1-idp",
@@ -18,7 +19,8 @@
         "userInfoUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/userinfo",
         "logoutUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/logout",
         "useJwksUrl": "true",
-        "jwksUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/certs"
+        "jwksUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/certs",
+        "backchannelSupported": "true"
       }
     },
     {
@@ -36,7 +38,8 @@
         "userInfoUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/userinfo",
         "logoutUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/logout",
         "useJwksUrl": "true",
-        "jwksUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/certs"
+        "jwksUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/certs",
+        "backchannelSupported": "true"
       }
     }
   ],
@@ -64,17 +67,6 @@
         "http://localhost:5000/*"
       ],
       "rootUrl": "http://localhost:5000"
-    }
-  ],
-  "authenticationFlows": [
-    {
-      "alias": "Browser Flow with IDP Redirector",
-      "providerId": "basic-flow",
-      "topLevel": true,
-      "builtIn": false,
-      "authenticationExecutions": [
-        { "authenticator": "identity-provider-redirector", "requirement": "REQUIRED" }
-      ]
     }
   ]
 }
