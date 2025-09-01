@@ -1,0 +1,32 @@
+{
+  "realm": "domain-1-idp",
+  "enabled": true,
+  "users": [
+    {
+      "username": "user-1@domain-1.com",
+      "email": "user-1@domain-1.com",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "federated-idp-broker",
+      "secret": "domain1secret",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "authorizationServicesEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "http://localhost:8080/realms/federated-idp/broker/domain-1-idp/endpoint/*"
+      ],
+      "rootUrl": "http://localhost:8080/realms/federated-idp/broker/domain-1-idp/endpoint"
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 # Credentials and sensitive files
 credentials/
 *.key
-*.json
 *.pem
+
+# Allow Keycloak realm configuration files
+!keycloak/realms/*.json
 
 # Environment files (excluding .env)
 .env.local

@@ -1,0 +1,80 @@
+{
+  "realm": "federated-idp",
+  "enabled": true,
+  "loginTheme": "keycloak",
+  "identityProviders": [
+    {
+      "alias": "domain-1-idp",
+      "displayName": "Domain 1 IDP",
+      "providerId": "keycloak-oidc",
+      "enabled": true,
+      "trustEmail": true,
+      "storeToken": true,
+      "config": {
+        "clientId": "federated-idp-broker",
+        "clientSecret": "domain1secret",
+        "authorizationUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/auth",
+        "tokenUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/token",
+        "userInfoUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/userinfo",
+        "logoutUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/logout",
+        "useJwksUrl": "true",
+        "jwksUrl": "http://localhost:8080/auth/realms/domain-1-idp/protocol/openid-connect/certs"
+      }
+    },
+    {
+      "alias": "domain-2-idp",
+      "displayName": "Domain 2 IDP",
+      "providerId": "keycloak-oidc",
+      "enabled": true,
+      "trustEmail": true,
+      "storeToken": true,
+      "config": {
+        "clientId": "federated-idp-broker",
+        "clientSecret": "domain2secret",
+        "authorizationUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/auth",
+        "tokenUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/token",
+        "userInfoUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/userinfo",
+        "logoutUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/logout",
+        "useJwksUrl": "true",
+        "jwksUrl": "http://localhost:8080/auth/realms/domain-2-idp/protocol/openid-connect/certs"
+      }
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "name": "domain-1-username-mapper",
+      "identityProviderAlias": "domain-1-idp",
+      "identityProviderMapper": "hardcoded-user-session-attribute-idp-mapper",
+      "config": { "attribute.value": "test-1@sso.com", "attribute": "preferred_username", "syncMode": "FORCE" }
+    },
+    {
+      "name": "domain-2-username-mapper",
+      "identityProviderAlias": "domain-2-idp",
+      "identityProviderMapper": "hardcoded-user-session-attribute-idp-mapper",
+      "config": { "attribute.value": "test-2@sso.com", "attribute": "preferred_username", "syncMode": "FORCE" }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "sso-app",
+      "secret": "ssoappsecret",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "redirectUris": [
+        "http://localhost:5000/*"
+      ],
+      "rootUrl": "http://localhost:5000"
+    }
+  ],
+  "authenticationFlows": [
+    {
+      "alias": "Browser Flow with IDP Redirector",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        { "authenticator": "identity-provider-redirector", "requirement": "REQUIRED" }
+      ]
+    }
+  ]
+}
