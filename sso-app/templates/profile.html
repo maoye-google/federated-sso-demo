@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+     <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #f4f4f4; padding: 20px; border-radius: 5px; }
+        pre { background: #333; color: #fff; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        a { text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Profile</h1>
+        <p>
+            Welcome! You have successfully logged in through the federated identity provider.
+        </p>
+        <p>
+            Your new federated username is: <strong>{{ user.preferred_username }}</strong>
+        </p>
+        <p><a href="{{ url_for('logout') }}">Logout</a></p>
+        
+        <hr>
+        
+        <h3>Full OIDC Claims:</h3>
+        <pre>{{ user | tojson(indent=4) }}</pre>
+    </div>
+</body>
+</html>

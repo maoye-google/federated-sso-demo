@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_RELATIVE_PATH: /auth
+    ports:
+      - "8080:8080"
+    networks:
+      - sso-net
+
+  sso-app:
+    build: ./sso-app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      KEYCLOAK_PUBLIC_URL: http://localhost:8080/auth
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080/auth
+      KEYCLOAK_CLIENT_SECRET: ssoappsecret
+    depends_on:
+      - keycloak
+    networks:
+      - sso-net
+    restart: on-failure
+
+networks:
+  sso-net:
+    driver: bridge
