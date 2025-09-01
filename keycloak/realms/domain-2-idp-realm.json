@@ -5,6 +5,8 @@
     {
       "username": "user-2@domain-2.com",
       "email": "user-2@domain-2.com",
+      "firstName": "User",
+      "lastName": "Two",
       "enabled": true,
       "credentials": [
         {

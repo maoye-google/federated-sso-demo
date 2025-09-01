@@ -136,6 +136,15 @@ def auth():
             # Decode without verification since it's from our trusted Keycloak
             userinfo = jwt.decode(token['id_token'], options={"verify_signature": False})
             app.logger.info(f"User info extracted: {userinfo.get('preferred_username', 'unknown')}")
+            
+            # Create UUID-based username using the 'sub' claim which is already a UUID
+            if 'sub' in userinfo:
+                # Use the subject UUID to create the SSO username
+                sso_username = f"{userinfo['sub']}@sso.com"
+                userinfo['sso_username'] = sso_username
+                userinfo['original_username'] = userinfo.get('preferred_username', '')
+                app.logger.info(f"Generated SSO username: {sso_username}")
+            
         else:
             return "Authentication failed: No ID token in response", 500
         
